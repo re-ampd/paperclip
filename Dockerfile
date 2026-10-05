@@ -3,7 +3,7 @@ FROM node:lts-trixie-slim AS base
 ARG USER_UID=1000
 ARG USER_GID=1000
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates gosu curl gh git wget ripgrep python3 \
+  && apt-get install -y --no-install-recommends ca-certificates gosu curl gh git wget ripgrep python3 tini \
   && rm -rf /var/lib/apt/lists/* \
   && corepack enable
 
@@ -108,7 +108,7 @@ ENV NODE_ENV=production \
 
 EXPOSE 3100
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["tini", "--", "docker-entrypoint.sh"]
 CMD ["node", "--import", "./server/node_modules/tsx/dist/loader.mjs", "server/dist/index.js"]
 
 # Cloud image variant (build with `--target cloud`): the production image
